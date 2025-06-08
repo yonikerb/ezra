@@ -30,5 +30,15 @@
       }
     });
   </script>
+  <script>
+  document.addEventListener("keydown", function (e) {
+    if (e.ctrlKey && e.altKey && e.key.toLowerCase() === "j") {
+      if (window.location.pathname.endsWith("index.html") || window.location.pathname === "/") {
+        window.open("ad.html", "_blank");
+      }
+    }
+  });
+</script>
+
 </body>
 </html>
