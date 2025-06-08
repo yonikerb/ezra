@@ -1,9 +1,6 @@
 import {
   auth,
   db,
-  signInWithEmailAndPassword,
-  signOut,
-  onAuthStateChanged,
   createUserWithEmailAndPassword,
   doc,
   getDoc,
@@ -11,7 +8,6 @@ import {
   updateDoc,
   collection,
   getDocs,
-  increment,
   serverTimestamp
 } from "../firebase.js";
 
@@ -21,9 +17,23 @@ const createUserForm = document.getElementById("createUserForm");
 const createUserMsg = document.getElementById("createUserMsg");
 const livePagesList = document.getElementById("livePagesList");
 
+// --- שעון חי ---
+function updateClock() {
+  const clock = document.getElementById("clock");
+  const now = new Date();
+  clock.textContent = now.toLocaleTimeString('he-IL');
+}
+setInterval(updateClock, 1000);
+updateClock();
 
+// --- טען מידע כל שניה ---
+setInterval(() => {
+  loadActiveUsersCount();
+  loadUsers();
+  loadLivePages();
+}, 1000);
 
-// --- טען כמה משתמשים פעילים (למשל שמורים ב-firestore מסמך מיוחד) ---
+// --- טען משתמשים פעילים ---
 async function loadActiveUsersCount() {
   try {
     const docSnap = await getDoc(doc(db, "stats", "activeUsers"));
@@ -33,8 +43,7 @@ async function loadActiveUsersCount() {
     } else {
       activeUsersCountEl.textContent = "0";
     }
-  } catch (e) {
-    console.error("Error loading active users count:", e);
+  } catch {
     activeUsersCountEl.textContent = "שגיאה";
   }
 }
@@ -50,23 +59,18 @@ async function loadUsers() {
 
       const tr = document.createElement("tr");
 
-      // אימייל
       const emailTd = document.createElement("td");
       emailTd.textContent = u.email || "-";
 
-      // סטטוס אישור
       const approvedTd = document.createElement("td");
       approvedTd.textContent = u.isApproved ? "✔️" : "❌";
 
-      // חסום?
       const blockedTd = document.createElement("td");
       blockedTd.textContent = u.isBlocked ? "חסום" : "לא חסום";
 
-      // כניסות
       const loginsTd = document.createElement("td");
       loginsTd.textContent = u.loginCount || 0;
 
-      // כניסה אחרונה
       const lastLoginTd = document.createElement("td");
       if (u.lastLogin && u.lastLogin.toDate) {
         lastLoginTd.textContent = u.lastLogin.toDate().toLocaleString('he-IL');
@@ -74,22 +78,17 @@ async function loadUsers() {
         lastLoginTd.textContent = "-";
       }
 
-      // פעולות
       const actionsTd = document.createElement("td");
-
-      // כפתור לאישור משתמש
       const approveBtn = document.createElement("button");
       approveBtn.textContent = "אשר";
       approveBtn.className = "approve";
       approveBtn.onclick = () => updateUserField(uid, "isApproved", true);
 
-      // כפתור לחסימת משתמש
       const blockBtn = document.createElement("button");
       blockBtn.textContent = "חסום";
       blockBtn.className = "block";
       blockBtn.onclick = () => updateUserField(uid, "isBlocked", true);
 
-      // כפתור לביטול חסימה
       const unblockBtn = document.createElement("button");
       unblockBtn.textContent = "בטל חסימה";
       unblockBtn.className = "approve";
@@ -112,23 +111,21 @@ async function loadUsers() {
       usersTableBody.appendChild(tr);
     });
   } catch (e) {
-    console.error("Error loading users:", e);
+    console.error("שגיאה בטעינת משתמשים:", e);
   }
 }
 
-// --- פונקציה לעדכון שדה משתמש ---
+// --- עדכון שדות משתמש ---
 async function updateUserField(uid, field, value) {
   try {
     const userRef = doc(db, "users", uid);
     await updateDoc(userRef, { [field]: value });
-    alert("עודכן בהצלחה!");
-    loadUsers();
   } catch (e) {
-    alert("שגיאה בעדכון: " + e.message);
+    alert("שגיאה: " + e.message);
   }
 }
 
-// --- יצירת משתמש חדש בדשבורד ---
+// --- יצירת משתמש חדש ---
 createUserForm.addEventListener("submit", async e => {
   e.preventDefault();
   const email = document.getElementById("newUserEmail").value.trim();
@@ -139,7 +136,6 @@ createUserForm.addEventListener("submit", async e => {
     const userCredential = await createUserWithEmailAndPassword(auth, email, password);
     const user = userCredential.user;
 
-    // הוספת פרטים במסד הנתונים
     await setDoc(doc(db, "users", user.uid), {
       email: email,
       isApproved: false,
@@ -151,17 +147,13 @@ createUserForm.addEventListener("submit", async e => {
     createUserMsg.style.color = "green";
     createUserMsg.textContent = "משתמש נוצר בהצלחה!";
     createUserForm.reset();
-    loadUsers();
-
   } catch (e) {
     createUserMsg.style.color = "red";
-    createUserMsg.textContent = "שגיאה ביצירת משתמש: " + e.message;
+    createUserMsg.textContent = "שגיאה: " + e.message;
   }
 });
 
-// --- טעינת דפים שנצפים בזמן אמת ---
-// לשם כך צריך שתשמור בכל כניסה לדף/פעולה את דף המשתמש ב-firestore,
-// כאן הדוגמה פשוטה - אנחנו קוראים את המסמך livePages בו מאוחסנים דפי הגלישה הנוכחיים
+// --- טען דפים חיים ---
 async function loadLivePages() {
   livePagesList.innerHTML = "<li>טוען...</li>";
   try {
@@ -171,14 +163,13 @@ async function loadLivePages() {
       livePagesList.innerHTML = "";
       for (const [uid, page] of Object.entries(data)) {
         const li = document.createElement("li");
-        li.textContent = `משתמש ${uid}: צופה ב-${page}`;
+        li.textContent = `משתמש ${uid}: ${page}`;
         livePagesList.appendChild(li);
       }
     } else {
-      livePagesList.innerHTML = "<li>אין נתונים זמינים כרגע</li>";
+      livePagesList.innerHTML = "<li>אין מידע</li>";
     }
-  } catch (e) {
-    livePagesList.innerHTML = "<li>שגיאה בטעינת נתונים</li>";
-    console.error("Error loading live pages:", e);
+  } catch {
+    livePagesList.innerHTML = "<li>שגיאה</li>";
   }
 }
