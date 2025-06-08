@@ -17,6 +17,14 @@
       text-align: center;
       font-size: 1.5rem;
       font-weight: bold;
+      position: relative;
+    }
+    #clock {
+      position: absolute;
+      left: 30px;
+      top: 15px;
+      font-size: 1rem;
+      font-weight: normal;
     }
     main {
       padding: 20px 30px;
@@ -57,18 +65,10 @@
       font-weight: 600;
       transition: background-color 0.3s ease;
     }
-    .approve {
-      background-color: #28a745;
-    }
-    .approve:hover {
-      background-color: #218838;
-    }
-    .block {
-      background-color: #dc3545;
-    }
-    .block:hover {
-      background-color: #c82333;
-    }
+    .approve { background-color: #28a745; }
+    .approve:hover { background-color: #218838; }
+    .block { background-color: #dc3545; }
+    .block:hover { background-color: #c82333; }
     #activeUsersCount {
       font-size: 1.2rem;
       margin-bottom: 15px;
@@ -79,7 +79,11 @@
   </style>
 </head>
 <body>
-  <header>דשבורד ניהול האתר</header>
+  <header>
+    דשבורד ניהול האתר
+    <span id="clock"></span>
+  </header>
+
   <main>
     <div class="section">
       <h2>משתמשים פעילים עכשיו: <span id="activeUsersCount">טוען...</span></h2>
@@ -98,9 +102,7 @@
             <th>פעולות</th>
           </tr>
         </thead>
-        <tbody id="usersTableBody">
-          <!-- יתמלא דינמית -->
-        </tbody>
+        <tbody id="usersTableBody"></tbody>
       </table>
     </div>
 
@@ -115,10 +117,9 @@
     </div>
 
     <div class="section">
-      <h2>מעקב דפים שנצפים כרגע (live)</h2>
+      <h2>דפים נצפים עכשיו</h2>
       <ul id="livePagesList"></ul>
     </div>
-
   </main>
 
   <script type="module" src="./admin.js"></script>
