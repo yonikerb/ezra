@@ -3,31 +3,100 @@
 <head>
   <meta charset="UTF-8" />
   <title>דשבורד ניהול</title>
-  <link rel="stylesheet" href="style.css" />
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      direction: rtl;
+      background: #eef2f7;
+      margin: 0; padding: 0;
+    }
+    header {
+      background: #007bff;
+      color: white;
+      padding: 15px 30px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    header h1 {
+      margin: 0;
+      font-size: 1.6rem;
+    }
+    #clock {
+      font-size: 1.2rem;
+    }
+    main {
+      padding: 30px;
+      display: grid;
+      gap: 30px;
+    }
+    .card {
+      background: white;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    }
+    h2 {
+      margin-top: 0;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+    th, td {
+      padding: 10px;
+      border-bottom: 1px solid #ddd;
+      text-align: center;
+    }
+    th {
+      background: #007bff;
+      color: white;
+    }
+    tr:hover {
+      background: #f9f9f9;
+    }
+    button {
+      padding: 6px 12px;
+      border: none;
+      border-radius: 4px;
+      color: white;
+      cursor: pointer;
+    }
+    .approve { background-color: #28a745; }
+    .block { background-color: #dc3545; }
+    .approve:hover { background-color: #218838; }
+    .block:hover { background-color: #c82333; }
+    input[type="email"], input[type="password"] {
+      padding: 8px;
+      margin: 5px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+    }
+    #createUserForm button {
+      background-color: #007bff;
+    }
+  </style>
 </head>
 <body>
   <header>
-    <h1>דשבורד ניהול</h1>
-    <div id="clock"></div>
+    <h1>דשבורד ניהול האתר</h1>
+    <div id="clock">00:00:00</div>
   </header>
+
   <main>
-    <section class="card">
-      <h2>משתמשים פעילים: <span id="activeUsersCount">טוען...</span></h2>
-    </section>
+    <div class="card">
+      <h2>🟢 משתמשים פעילים כרגע: <span id="activeUsersCount">טוען...</span></h2>
+      <ul id="livePagesList"></ul>
+    </div>
 
-    <section class="card">
-      <h2>משתמשים וצפיות</h2>
-      <ul id="livePagesList">טוען...</ul>
-    </section>
-
-    <section class="card">
-      <h2>רשימת משתמשים</h2>
+    <div class="card">
+      <h2>👥 רשימת משתמשים</h2>
       <table>
         <thead>
           <tr>
             <th>אימייל</th>
-            <th>אושר?</th>
-            <th>חסום?</th>
+            <th>מאושר</th>
+            <th>חסום</th>
             <th>כניסות</th>
             <th>כניסה אחרונה</th>
             <th>פעולות</th>
@@ -35,19 +104,26 @@
         </thead>
         <tbody id="usersTableBody"></tbody>
       </table>
-    </section>
+    </div>
 
-    <section class="card">
-      <h2>צור משתמש חדש</h2>
+    <div class="card">
+      <h2>➕ יצירת משתמש חדש</h2>
       <form id="createUserForm">
         <input type="email" id="newUserEmail" placeholder="אימייל" required />
         <input type="password" id="newUserPassword" placeholder="סיסמה" required />
-        <button type="submit">צור</button>
+        <button type="submit">צור משתמש</button>
       </form>
       <p id="createUserMsg"></p>
-    </section>
+    </div>
   </main>
 
-  <script type="module" src="admin.js"></script>
+  <script type="module" src="./admin.js"></script>
+  <script>
+    // שעון חי
+    setInterval(() => {
+      const now = new Date();
+      document.getElementById("clock").textContent = now.toLocaleTimeString('he-IL');
+    }, 1000);
+  </script>
 </body>
 </html>
