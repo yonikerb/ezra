@@ -1,0 +1,84 @@
+:root {
+  --bg: #f1f5f9;
+  --primary: #3b82f6;
+  --primary-dark: #2563eb;
+  --text: #1e293b;
+  --white: #ffffff;
+  --input-border: #cbd5e1;
+  --error: #ef4444;
+}
+
+body {
+  margin: 0;
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+  background-image: url('background.jpg'); /* 💡 שים את שם הקובץ שלך כאן */
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+}
+
+/* קופסת תוכן */
+.container {
+  background-color: rgba(255, 255, 255, 0.85); /* רקע לבן שקוף */
+  padding: 2rem;
+  border-radius: 12px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+  width: 100%;
+  max-width: 400px;
+  text-align: center;
+}
+
+/* כותרת */
+h1 {
+  margin-bottom: 1.5rem;
+  color: var(--primary-dark);
+}
+
+/* שדות טופס */
+input[type="email"],
+input[type="password"] {
+  width: 100%;
+  padding: 0.75rem;
+  margin-bottom: 1rem;
+  border: 1px solid var(--input-border);
+  border-radius: 8px;
+  font-size: 1rem;
+}
+
+/* כפתור */
+button {
+  background-color: var(--primary);
+  color: var(--white);
+  border: none;
+  padding: 0.75rem 1.5rem;
+  font-size: 1rem;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+button:hover {
+  background-color: var(--primary-dark);
+}
+
+/* קישור תחתון */
+a {
+  color: var(--primary-dark);
+  text-decoration: none;
+  font-size: 0.9rem;
+}
+
+a:hover {
+  text-decoration: underline;
+}
+
+/* הודעת שגיאה */
+#error-message {
+  color: var(--error);
+  margin-bottom: 1rem;
+  font-size: 0.9rem;
+}

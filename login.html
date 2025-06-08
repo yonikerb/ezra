@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="he">
+<head>
+  <meta charset="UTF-8" />
+  <title>התחברות</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      direction: rtl;
+      background: #f0f4f8;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+    }
+    .login-container {
+      background: white;
+      padding: 30px;
+      border-radius: 10px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+      width: 320px;
+      text-align: center;
+    }
+    h2 {
+      margin-bottom: 20px;
+      color: #333;
+    }
+    label {
+      display: block;
+      margin-bottom: 8px;
+      color: #555;
+      text-align: right;
+    }
+    input[type="email"], input[type="password"] {
+      width: 100%;
+      padding: 10px;
+      margin-bottom: 15px;
+      border-radius: 5px;
+      border: 1px solid #ccc;
+      box-sizing: border-box;
+      direction: ltr;
+    }
+    button {
+      width: 100%;
+      background-color: #007bff;
+      color: white;
+      border: none;
+      padding: 12px;
+      border-radius: 5px;
+      font-size: 16px;
+      cursor: pointer;
+    }
+    button:hover {
+      background-color: #0056b3;
+    }
+    .error-message {
+      color: red;
+      margin-bottom: 10px;
+      min-height: 20px;
+    }
+  </style>
+</head>
+<body>
+
+<div class="login-container">
+  <h2>התחברות</h2>
+  <div class="error-message" id="error-message"></div>
+  <label for="email">אימייל</label>
+  <input type="email" id="email" placeholder="example@gmail.com" required />
+  
+  <label for="password">סיסמה</label>
+  <input type="password" id="password" placeholder="••••••••" required />
+  
+  <button id="loginBtn">התחבר</button>
+</div>
+
+<script type="module">
+  import { auth } from './firebase.js';
+  import { signInWithEmailAndPassword, signOut } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-auth.js";
+  import { getFirestore, doc, getDoc, updateDoc, increment, serverTimestamp } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js";
+
+  const db = getFirestore();
+
+  const loginBtn = document.getElementById("loginBtn");
+  const errorMessage = document.getElementById("error-message");
+
+  loginBtn.addEventListener("click", async () => {
+    errorMessage.textContent = "";
+    const email = document.getElementById("email").value.trim();
+    const password = document.getElementById("password").value;
+
+    if (!email || !password) {
+      errorMessage.textContent = "אנא מלא את כל השדות";
+      return;
+    }
+
+    try {
+      const userCredential = await signInWithEmailAndPassword(auth, email, password);
+      const user = userCredential.user;
+
+      const docRef = doc(db, "users", user.uid);
+      const docSnap = await getDoc(docRef);
+
+      if (docSnap.exists() && docSnap.data().isApproved === true) {
+        // עדכון נתוני כניסה
+        await updateDoc(docRef, {
+          lastLogin: serverTimestamp(),
+          loginCount: increment(1)
+        });
+
+        alert("ברוך הבא! התחברת בהצלחה.");
+        window.location.href = "home.html"; // שנה לפי הצורך
+      } else {
+        errorMessage.textContent = "החשבון שלך עדיין לא אושר. אנא המתן לאישור מנהל.";
+        await signOut(auth);
+      }
+    } catch (error) {
+      errorMessage.textContent = "שגיאה: " + error.message;
+    }
+  });
+</script>
+
+</body>
+</html>

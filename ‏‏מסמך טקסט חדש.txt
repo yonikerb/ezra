@@ -1,0 +1,2 @@
+ניהול משתמשים
+https://console.firebase.google.com/u/0/project/ezra-5e403/authentication/users
