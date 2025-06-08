@@ -15,37 +15,13 @@ import {
   serverTimestamp
 } from "../firebase.js";
 
-// בדיקה פשוטה - רק מנהלים עם מייל זה יוכלו לראות את הדשבורד:
-const allowedAdmins = [
-  "s0583212053@gmail.com",
-  "p0583212053@gmail.com"
-];
-
 const activeUsersCountEl = document.getElementById("activeUsersCount");
 const usersTableBody = document.getElementById("usersTableBody");
 const createUserForm = document.getElementById("createUserForm");
 const createUserMsg = document.getElementById("createUserMsg");
 const livePagesList = document.getElementById("livePagesList");
 
-// --- בדיקת הרשאות והתחברות ---
 
-onAuthStateChanged(auth, user => {
-  if (!user) {
-    alert("אנא התחבר עם חשבון מנהל.");
-    window.location.href = "../login.html"; // הפנה לדף התחברות שלך
-    return;
-  }
-  if (!allowedAdmins.includes(user.email)) {
-    alert("אין לך הרשאה לגשת לדשבורד זה.");
-    signOut(auth);
-    window.location.href = "../login.html";
-    return;
-  }
-  // טען את כל המידע:
-  loadActiveUsersCount();
-  loadUsers();
-  loadLivePages();
-});
 
 // --- טען כמה משתמשים פעילים (למשל שמורים ב-firestore מסמך מיוחד) ---
 async function loadActiveUsersCount() {
