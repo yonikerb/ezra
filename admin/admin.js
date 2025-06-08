@@ -112,3 +112,16 @@ function refreshAll() {
 }
 refreshAll();
 setInterval(refreshAll, 5000);
+
+// טען כל 5 שניות בלי לרענן את הדף (רק תוכן)
+setInterval(() => {
+  loadActiveUsersCount();
+  loadUsers();
+  loadLivePages();
+}, 5000);
+
+// הפעלה ראשונית
+loadActiveUsersCount();
+loadUsers();
+loadLivePages();
+
